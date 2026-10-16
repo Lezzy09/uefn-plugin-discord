@@ -221,7 +221,7 @@ def register_tools(api: Any) -> None:
 
     @_tool(api, intent=_INTENT)
     def discord_delete_role(role_id: str, pretty: bool = False) -> str:
-        """Delete a role by id."""
+        """Delete a Discord server role by its id (members lose the role)."""
         result = _call(client.delete_role, role_id.strip())
         return tool_json(result, pretty=pretty)
 
