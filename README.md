@@ -15,6 +15,13 @@ For a full member list and Online/Offline status, enable **Server Members Intent
 Incoming Webhook URL (channel Integrations — not a bot token). When a chat in the
 Ducky app ends a job (`agent_stopped` done/error/timeout), the plugin POSTs to that URL.
 
+**Rich Presence:** Settings → Discord → “Rich Presence”. Shows “Playing Ducky” on your own
+Discord profile while Ducky is open, with a session timer and a UEFN Ducky button. It talks to the
+Discord desktop app over its local IPC pipe (`discord-ipc-N`), not the bot. The application,
+image (Art Asset `ducky_1024`) and button are fixed in `backend/rich_presence.py`; users only switch
+it on and pick what shows: whether UEFN is open and how many duckies are working. It never shows
+project names or chat titles. On by default.
+
 This plugin is a **real Discord bot** (Gateway `MESSAGE_CREATE`) — not a REST poller.
 **Show offline** disconnects the gateway (bot appears Offline; no `!commands` until Online again).
 Enable **Message Content Intent** in the Dev Portal if gateway content is empty (we also hydrate via REST).

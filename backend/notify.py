@@ -248,6 +248,10 @@ def install_hook() -> None:
                 on_panel_event(event)
             except Exception:
                 pass
+            if isinstance(event, dict) and str(event.get("type") or "").startswith("agent_"):
+                from . import rich_presence
+
+                rich_presence.refresh()
 
         tap._discord_job_notify = True  # type: ignore[attr-defined]
         return tap

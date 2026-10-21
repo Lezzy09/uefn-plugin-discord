@@ -72,7 +72,7 @@ def _start_runtime_safe(log_fn: Any) -> None:
 
 
 def _start_runtime() -> None:
-    from . import poller, presence
+    from . import poller, presence, rich_presence
 
     # Clear panel watch-state; Gateway (presence) is the only message path.
     try:
@@ -82,14 +82,19 @@ def _start_runtime() -> None:
     presence.set_plugin_active(True)
     presence.ensure_all_enabled()
     poller.sync_enabled_bots()
+    rich_presence.start()
 
 
 def _stop_runtime() -> None:
     try:
-        from . import notify, poller, presence
+        from . import notify, poller, presence, rich_presence
 
         try:
             notify.uninstall_hook()
+        except Exception:
+            pass
+        try:
+            rich_presence.stop()
         except Exception:
             pass
         presence.set_plugin_active(False)

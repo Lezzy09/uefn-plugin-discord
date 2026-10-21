@@ -214,6 +214,41 @@
         </div>
 
         <section class="section">
+          <h2 class="section-title">Rich Presence</h2>
+          <p class="section-desc">
+            Shows "Playing Ducky" on your own Discord profile while Ducky is open, with a session timer.
+            Never your project names or chats.
+            Needs the Discord desktop app on this PC.
+          </p>
+          <div class="toggle-card">
+            <div class="toggle-row">
+              <div class="toggle-copy">
+                <div class="toggle-label">Show Ducky on my Discord profile</div>
+                <div class="toggle-desc" id="rp-live">Off</div>
+              </div>
+              <label class="switch"><input type="checkbox" id="rp-enabled" data-rp="enabled" /><span></span></label>
+            </div>
+          </div>
+          <div class="toggle-card" style="margin-top:4px">
+            <div class="toggle-row">
+              <div class="toggle-copy">
+                <div class="toggle-label">Show when UEFN is open</div>
+                <div class="toggle-desc">Shows “Editing in UEFN” while the editor is running.</div>
+              </div>
+              <label class="switch"><input type="checkbox" id="rp-uefn" data-rp="show_uefn" /><span></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-copy">
+                <div class="toggle-label">Show how many duckies are working</div>
+                <div class="toggle-desc">“🦆 2 duckies working”, or “💤 Duckies resting”.</div>
+              </div>
+              <label class="switch"><input type="checkbox" id="rp-duckies" data-rp="show_duckies" /><span></span></label>
+            </div>
+          </div>
+          <div class="status" id="rp-status"></div>
+        </section>
+
+        <section class="section">
           <h2 class="section-title">Job notifications</h2>
           <p class="section-desc">
             When a ducky finishes a job in the Ducky app, POST to a Discord Incoming Webhook
@@ -353,6 +388,46 @@
       })
       .catch(function () {});
   }
+
+  var rpStatus = document.getElementById("rp-status");
+
+  function rpLive(st) {
+    var el = document.getElementById("rp-live");
+    if (!st.enabled) el.textContent = "Off";
+    else if (st.connected) el.textContent = "Live" + (st.discord_user ? " as " + st.discord_user : "");
+    else el.textContent = st.error || "Connecting…";
+  }
+
+  var rpInputs = Array.prototype.slice.call(document.querySelectorAll("[data-rp]"));
+
+  function loadRichPresence() {
+    return rpc("get_rich_presence", {})
+      .then(function (st) {
+        if (!st || st.ok === false) return;
+        rpInputs.forEach(function (el) { el.checked = !!st[el.dataset.rp]; });
+        rpLive(st);
+      })
+      .catch(function () {});
+  }
+
+  rpInputs.forEach(function (el) {
+    el.onchange = function () {
+      var patch = {};
+      patch[el.dataset.rp] = !!el.checked;
+      setStatus(rpStatus, "");
+      rpc("save_rich_presence", { patch: patch }).then(function (res) {
+        if (!res || res.ok === false) {
+          setStatus(rpStatus, (res && res.error) || "Save failed", "err");
+          return;
+        }
+        rpLive(res);
+        // The worker connects in the background; show the result a moment later.
+        window.setTimeout(loadRichPresence, 2500);
+      }).catch(function (e) {
+        setStatus(rpStatus, String(e.message || e), "err");
+      });
+    };
+  });
 
   function escapeHtml(s) {
     return String(s || "").replace(/[&<>"']/g, function (c) {
@@ -581,6 +656,7 @@
   });
   pullTheme();
   loadNotify();
+  loadRichPresence();
   refresh();
 })();
 </script>

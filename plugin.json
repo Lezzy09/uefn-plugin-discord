@@ -1,9 +1,9 @@
 {
   "id": "discord",
   "kind": "plugin",
-  "version": "1.1.20",
+  "version": "1.1.21",
   "label": "Discord",
-  "description": "Discord bot chat, !ducky commands, and agent server-admin tools in UEFN Ducky",
+  "description": "Discord bot chat, !ducky commands, Rich Presence, and agent server-admin tools in UEFN Ducky",
   "min_app_version": "1.2.357",
   "default_enabled": true,
   "data_sharing": false,

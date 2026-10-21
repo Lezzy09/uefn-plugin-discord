@@ -351,6 +351,18 @@ def test_notify(_unused: str = "") -> dict[str, Any]:
         return {"ok": False, "error": str(e)}
 
 
+def get_rich_presence(_unused: str = "") -> dict[str, Any]:
+    from . import rich_presence
+
+    return rich_presence.public_settings()
+
+
+def save_rich_presence(patch: dict[str, Any] | None = None) -> dict[str, Any]:
+    from . import rich_presence
+
+    return rich_presence.save_settings(patch if isinstance(patch, dict) else {})
+
+
 def register_panel_rpcs(api: Any) -> None:
     api.register_panel_rpc("list_bots", list_bots)
     api.register_panel_rpc("save_bot", save_bot)
@@ -358,6 +370,8 @@ def register_panel_rpcs(api: Any) -> None:
     api.register_panel_rpc("get_notify", get_notify)
     api.register_panel_rpc("save_notify", save_notify)
     api.register_panel_rpc("test_notify", test_notify)
+    api.register_panel_rpc("get_rich_presence", get_rich_presence)
+    api.register_panel_rpc("save_rich_presence", save_rich_presence)
     api.register_panel_rpc("status", status)
     api.register_panel_rpc("list_channels", list_channels)
     api.register_panel_rpc("debug", debug)
